@@ -37,10 +37,5 @@
     },
     "autoload": {
         "psr-4": {"Fayho\\": "src/Fayho"}
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "master"
-        }
     }
 }
