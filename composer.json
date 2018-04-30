@@ -2,7 +2,7 @@
     "name": "fayho/fayho",
     "description": "fayho framework depend on swoft",
     "keywords": ["Swoft", "psr-4"],
-    "homepage": "http://git.tdianyi.com/lizhuohuan/fayho",
+    "homepage": "https://github.com/davidhhuan/fayho",
     "type": "library",
     "license": "MIT",
     "authors": [
