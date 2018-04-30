@@ -1,6 +1,6 @@
 # env参考配置
 ```ini
-# store service (demo service)
+# store service
 STORE_POOL_NAME=store
 STORE_POOL_URI=127.0.0.1:8092,127.0.0.1:8092
 STORE_POOL_MIN_ACTIVE=5
@@ -13,7 +13,7 @@ STORE_POOL_USE_PROVIDER=false
 STORE_POOL_BALANCER=random
 STORE_POOL_PROVIDER=consul
 
-# store service breaker (demo service)
+# store service breaker
 STORE_BREAKER_FAIL_COUNT = 3
 STORE_BREAKER_SUCCESS_COUNT = 6
 STORE_BREAKER_DELAY_TIME = 5000

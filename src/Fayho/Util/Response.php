@@ -7,6 +7,8 @@
 
 namespace Fayho\Util;
 
+use Fayho\Util\Arrays;
+
 /**
  * 响应请求工具类
  * 
@@ -34,6 +36,7 @@ class Response
             ],
             JSON_UNESCAPED_UNICODE
         );
+        $json = Arrays::toString($json);
 
         return $json;
     }

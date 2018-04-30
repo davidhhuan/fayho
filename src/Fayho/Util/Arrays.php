@@ -151,7 +151,7 @@ class Arrays
         if (is_array($data)) {
             foreach ($data as $key => $val) {
                 if (is_array($val)) {
-                    $data[$key] = self::toString($val);
+                    $data[$key] = static::toString($val);
                 } else {
                     !is_bool($val) && !is_object($data) && $data[$key] = (string) $val;
                 }
