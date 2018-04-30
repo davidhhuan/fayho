@@ -85,10 +85,6 @@ interface ApiInterface
      * 
      * @param string $appid
      * @param string $token
-     * @param string $sign 签名。RPC调用者，需要根据以下方法进行签名
-     * <pre>
-     * \Fayho\Services\Api\Toolkit::generateTokenSign()
-     * </pre>
      * @param array $data
      *
      * @return array
@@ -106,7 +102,7 @@ interface ApiInterface
      * @author birdylee <birdylee_cn@163.com>
      * 
      */
-    public function setTokenData(string $appid, string $token, string $sign, array $data = []);
+    public function setTokenData(string $appid, string $token, array $data = []);
 
     /**
      * 
@@ -114,10 +110,6 @@ interface ApiInterface
      * 
      * @param string $appid
      * @param string $token
-     * @param string $sign 签名。RPC调用者，需要根据以下方法进行签名
-     * <pre>
-     * \Fayho\Services\Api\Toolkit::generateTokenSign()
-     * </pre>
      *
      * @return array
      * <pre>
@@ -134,6 +126,6 @@ interface ApiInterface
      * @author birdylee <birdylee_cn@163.com>
      * 
      */
-    public function getTokenData(string $appid, string $token, string $sign);
+    public function getTokenData(string $appid, string $token);
 
 }
