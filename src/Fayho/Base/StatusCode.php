@@ -81,10 +81,10 @@ class StatusCode
     public static function isSuccess($rs)
     {
         if(is_array($rs)){
-            return $rs['status'] === self::SUCCESS;
+            return $rs['status'] == self::SUCCESS;
         }
         
-        return $rs === self::SUCCESS;
+        return $rs == self::SUCCESS;
     }
     
     /**

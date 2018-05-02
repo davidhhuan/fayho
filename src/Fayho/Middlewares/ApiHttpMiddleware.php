@@ -15,14 +15,21 @@ use Swoft\Http\Message\Middleware\MiddlewareInterface;
 use Swoft\Core\RequestContext;
 use Fayho\Base\StatusCode;
 use Fayho\Services\Api\Interfaces\ApiInterface;
+use Fayho\Util\Response;
 
 /**
  * Class ApiHttpMiddleware - Custom middleware
  * @Bean()
  * @package App\Middlewares
  */
-abstract class ApiHttpMiddleware implements MiddlewareInterface
+class ApiHttpMiddleware implements MiddlewareInterface
 {
+    /**
+     *
+     * @Reference("api")
+     * @var ApiInterface
+     */
+    private $apiService;
 
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $request
@@ -85,12 +92,25 @@ abstract class ApiHttpMiddleware implements MiddlewareInterface
      */
     protected function checkRequest(ServerRequestInterface $request): array
     {
+        if (!$request->hasHeader('Request-Valid-Version')) {
+            return RequestContext::getResponse()->withStatus(200, StatusCode::handleReturnJson(50002));
+        }
+        
         if (!$request->hasHeader('Request-Valid-Appid')) {
             return RequestContext::getResponse()->withStatus(200, StatusCode::handleReturnJson(50001));
         }
-
-        if (!$request->hasHeader('Request-Valid-Version')) {
-            return RequestContext::getResponse()->withStatus(200, StatusCode::handleReturnJson(50002));
+        $appid = $request->getHeader('Request-Valid-Appid');
+        $appInfoRs = $this->apiService->geApp($appid);
+        if (!StatusCode::isSuccess($appInfoRs)) {
+            return RequestContext::getResponse()
+                ->withStatus(
+                    200, 
+                    Response::returnJson(
+                        $appInfoRs['status'], 
+                        $appInfoRs['msg'], 
+                        $appInfoRs['result']
+                    )
+                ); 
         }
 
         if (!$request->hasHeader('Request-Valid-Token')) {
@@ -101,16 +121,4 @@ abstract class ApiHttpMiddleware implements MiddlewareInterface
             return RequestContext::getResponse()->withStatus(200, StatusCode::handleReturnJson(50004));
         }
     }
-
-    /**
-     * 请求参数校验
-     *
-     * @param ServerRequestInterface $request
-     *
-     * @return ApiInterface
-     *
-     * @author birdylee <birdylee_cn@163.com>
-     * 
-     */
-    protected function getApiService(): ApiInterface;
 }
