@@ -26,7 +26,7 @@ class Response
      *
      * @author birdylee <birdylee_cn@163.com>
      */
-    public static function returnJson($status, $msg, $result = [])
+    public static function returnJson($status, $msg, $result = []): string
     {
         $json = json_encode(
             [

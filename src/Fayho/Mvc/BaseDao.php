@@ -5,7 +5,7 @@
  * @link http://www.fayho.com
  */
 
-namespace Fayho\Models;
+namespace Fayho\Mvc;
 
 /**
  * Dao抽象基类

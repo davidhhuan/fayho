@@ -5,10 +5,10 @@
  * @link http://www.fayho.com
  */
 
-namespace Fayho\Models;
+namespace Fayho\Mvc;
 
 /**
- * Data抽象基类
+ * Logic抽象基类
  * 
  * @Bean()
  * 
@@ -16,7 +16,7 @@ namespace Fayho\Models;
  * @version 2018年05月02日
  * 
  */
-abstract class BaseData
+abstract class BaseLogic
 {
 
 }

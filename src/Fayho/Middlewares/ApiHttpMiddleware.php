@@ -100,7 +100,7 @@ class ApiHttpMiddleware implements MiddlewareInterface
             return RequestContext::getResponse()->withStatus(200, StatusCode::handleReturnJson(50001));
         }
         $appid = $request->getHeader('Request-Valid-Appid');
-        $appInfoRs = $this->apiService->geApp($appid);
+        $appInfoRs = $this->apiService->getApp($appid);
         if (!StatusCode::isSuccess($appInfoRs)) {
             return RequestContext::getResponse()
                 ->withStatus(
