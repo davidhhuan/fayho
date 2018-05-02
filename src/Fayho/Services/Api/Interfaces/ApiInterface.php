@@ -13,6 +13,11 @@ use Swoft\Core\ResultInterface;
  * The interface of api service
  *
  * @method ResultInterface deferGetApp(string $appid)
+ * @method ResultInterface deferIsTokenOk(string $appid, string $token)
+ * @method ResultInterface deferGenerateToken(string $appid)
+ * @method ResultInterface deferSetTokenData(string $appid, string $token, array $data = [])
+ * @method ResultInterface deferGetTokenData(string $appid, string $token)
+ * 
  */
 interface ApiInterface
 {
