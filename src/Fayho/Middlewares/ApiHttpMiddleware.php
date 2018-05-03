@@ -8,9 +8,11 @@
 namespace Fayho\Middlewares;
 
 use Fayho\Base\Result;
+use Fayho\Di\FayhoDi;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Exception\Exception;
 use Swoft\Http\Message\Middleware\MiddlewareInterface;
@@ -19,6 +21,7 @@ use Fayho\Base\StatusCode;
 use Fayho\Services\Api\Interfaces\ApiInterface;
 use Fayho\Util\Response;
 use Swoft\Rpc\Client\Bean\Annotation\Reference;
+use Fayho\Services\Api\Constants as ServicesConstApi;
 
 /**
  * Class ApiHttpMiddleware
@@ -52,14 +55,7 @@ class ApiHttpMiddleware implements MiddlewareInterface
 
         $checkRs = $this->checkRequest($request);
         if (!StatusCode::isSuccess($checkRs)) {
-            throw new Exception($checkRs['msg'], $checkRs['status']);
-
-            return RequestContext::getResponse()
-                ->withStatus(400)
-                ->getBody()
-                ->write(Response::returnJson(
-                    $checkRs['status'], $checkRs['msg'], $checkRs['result']
-                ));
+            return response()->json($checkRs);
         }
 
         $response = $handler->handle($request);
@@ -71,7 +67,7 @@ class ApiHttpMiddleware implements MiddlewareInterface
      * 跨域处理
      *
      * @param ResponseInterface $response
-     * @return static
+     * @return \Psr\Http\Message\ResponseInterface|\Swoft\Http\Message\Server\Response
      *
      * @author birdylee <birdylee_cn@163.com>
      */
@@ -83,10 +79,10 @@ class ApiHttpMiddleware implements MiddlewareInterface
             'Accept',
             'Origin',
             'Authorization',
-            'Request-Valid-Appid',
-            'Request-Valid-Version',
-            'Request-Valid-Token',
-            'Request-Valid-Sign',
+            ServicesConstApi::REQUEST_VALID_APPID,
+            ServicesConstApi::REQUEST_VALID_SIGN,
+            ServicesConstApi::REQUEST_VALID_TOKEN,
+            ServicesConstApi::REQUEST_VALID_VERSION,
         ];
         return $response
             ->withHeader('Access-Control-Allow-Origin', '*')
@@ -100,29 +96,35 @@ class ApiHttpMiddleware implements MiddlewareInterface
      *
      * @return array
      *
+     * @throws
+     *
      * @author birdylee <birdylee_cn@163.com>
      * @since 2018.04.27
      */
     protected function checkRequest(ServerRequestInterface $request): array
     {
-        if (!$request->hasHeader('Request-Valid-Version')) {
+        //校验 ServicesConstApi::REQUEST_VALID_VERSION
+        if (!$request->hasHeader(ServicesConstApi::REQUEST_VALID_VERSION)) {
             return StatusCode::handleReturn(50002);
         }
-        
-        if (!$request->hasHeader('Request-Valid-Appid')) {
+
+        //校验 ServicesConstApi::REQUEST_VALID_APPID
+        if (!$request->hasHeader(ServicesConstApi::REQUEST_VALID_APPID)) {
             return StatusCode::handleReturn(50001);
         }
-        $appid = $request->getHeader('Request-Valid-Appid');
+        $appid = $request->getHeader(ServicesConstApi::REQUEST_VALID_APPID)[0];
         $appInfoRs = $this->apiService->getApp($appid);
         if (!StatusCode::isSuccess($appInfoRs)) {
             return $appInfoRs;
         }
 
-        if (!$request->hasHeader('Request-Valid-Token')) {
+        //校验 ServicesConstApi::REQUEST_VALID_TOKEN
+        if (!$request->hasHeader(ServicesConstApi::REQUEST_VALID_TOKEN)) {
             return StatusCode::handleReturn(50003);
         }
 
-        if (!$request->hasHeader('Request-Valid-Sign')) {
+        //校验 ServicesConstApi::REQUEST_VALID_SIGN
+        if (!$request->hasHeader(ServicesConstApi::REQUEST_VALID_SIGN)) {
             return StatusCode::handleReturn(50004);
         }
 

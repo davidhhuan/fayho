@@ -73,10 +73,13 @@ class StatusCode
 
         return Response::returnJson($result['status'], $result['msg'], $result['result']);
     }
-    
+
     /**
-     * 结果是否成功
-     * @param type $rs （array || code）
+     * @param string|array $rs
+     * @return bool
+     *
+     * @author birdylee <birdylee_cn@163.com>
+     * @since 2018.05.03
      */
     public static function isSuccess($rs)
     {
