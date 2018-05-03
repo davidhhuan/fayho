@@ -44,7 +44,7 @@ class Result implements \JsonSerializable, \Serializable, \ArrayAccess, Arrayabl
     /**
      * Result constructor.
      * @param $status
-     * @param $msg
+     * @param $msg 当$status不为null，$msg为null时，直接获取StatusCode对应的msg，也就是说,可以不传$msg这个参数
      * @param $result
      */
     public function __construct($status = null, $msg = null, $result = null)
@@ -52,6 +52,9 @@ class Result implements \JsonSerializable, \Serializable, \ArrayAccess, Arrayabl
         !is_null($status) && $this->status = $status;
         !is_null($msg) && $this->msg = $msg;
         !is_null($result) && $this->result = $result;
+        if (!is_null($status) && is_null($msg)) {
+            $this->msg = StatusCode::getMsg($status);
+        }
     }
 
     /**
@@ -66,6 +69,9 @@ class Result implements \JsonSerializable, \Serializable, \ArrayAccess, Arrayabl
         isset($rs['status']) && $this->status = $rs['status'];
         isset($rs['msg']) && $this->msg = $rs['msg'];
         isset($rs['result']) && $this->result = $rs['result'];
+        if (isset($rs['status']) && !isset($rs['msg'])) {
+            $this->msg = StatusCode::getMsg($rs['status']);
+        }
         return $this;
     }
 
@@ -115,6 +121,16 @@ class Result implements \JsonSerializable, \Serializable, \ArrayAccess, Arrayabl
     public function setResult($result)
     {
         $this->result = $result;
+    }
+
+    /**
+     *
+     * @author birdylee <birdylee_cn@163.com>
+     * @since 2018.05.03
+     */
+    public function isSucceed()
+    {
+        return $this->status == StatusCode::SUCCESS;
     }
 
     /**

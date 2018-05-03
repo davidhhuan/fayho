@@ -7,20 +7,27 @@
 
 namespace Fayho\Middlewares;
 
+use Fayho\Base\Result;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft\Bean\Annotation\Bean;
+use Swoft\Exception\Exception;
 use Swoft\Http\Message\Middleware\MiddlewareInterface;
 use Swoft\Core\RequestContext;
 use Fayho\Base\StatusCode;
 use Fayho\Services\Api\Interfaces\ApiInterface;
 use Fayho\Util\Response;
+use Swoft\Rpc\Client\Bean\Annotation\Reference;
 
 /**
- * Class ApiHttpMiddleware - Custom middleware
+ * Class ApiHttpMiddleware
+ * @package Fayho\Middlewares
+ *
  * @Bean()
- * @package App\Middlewares
+ *
+ * @author birdylee <birdylee_cn@163.com>
+ * @since 2018.05.03
  */
 class ApiHttpMiddleware implements MiddlewareInterface
 {
@@ -43,13 +50,19 @@ class ApiHttpMiddleware implements MiddlewareInterface
             return $this->configResponse(\response());
         }
 
-        $this->checkRequest();
+        $checkRs = $this->checkRequest($request);
+        if (!StatusCode::isSuccess($checkRs)) {
+            throw new Exception($checkRs['msg'], $checkRs['status']);
 
-        // before request handle
+            return RequestContext::getResponse()
+                ->withStatus(400)
+                ->getBody()
+                ->write(Response::returnJson(
+                    $checkRs['status'], $checkRs['msg'], $checkRs['result']
+                ));
+        }
 
         $response = $handler->handle($request);
-
-        // after request handle
 
         return $response->withAddedHeader('User-Middleware', 'success');
     }
@@ -93,32 +106,26 @@ class ApiHttpMiddleware implements MiddlewareInterface
     protected function checkRequest(ServerRequestInterface $request): array
     {
         if (!$request->hasHeader('Request-Valid-Version')) {
-            return RequestContext::getResponse()->withStatus(200, StatusCode::handleReturnJson(50002));
+            return StatusCode::handleReturn(50002);
         }
         
         if (!$request->hasHeader('Request-Valid-Appid')) {
-            return RequestContext::getResponse()->withStatus(200, StatusCode::handleReturnJson(50001));
+            return StatusCode::handleReturn(50001);
         }
         $appid = $request->getHeader('Request-Valid-Appid');
         $appInfoRs = $this->apiService->getApp($appid);
         if (!StatusCode::isSuccess($appInfoRs)) {
-            return RequestContext::getResponse()
-                ->withStatus(
-                    200, 
-                    Response::returnJson(
-                        $appInfoRs['status'], 
-                        $appInfoRs['msg'], 
-                        $appInfoRs['result']
-                    )
-                ); 
+            return $appInfoRs;
         }
 
         if (!$request->hasHeader('Request-Valid-Token')) {
-            return RequestContext::getResponse()->withStatus(200, StatusCode::handleReturnJson(50003));
+            return StatusCode::handleReturn(50003);
         }
 
         if (!$request->hasHeader('Request-Valid-Sign')) {
-            return RequestContext::getResponse()->withStatus(200, StatusCode::handleReturnJson(50004));
+            return StatusCode::handleReturn(50004);
         }
+
+        return StatusCode::handleReturn(200);
     }
 }
